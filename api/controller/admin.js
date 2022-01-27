@@ -115,6 +115,7 @@ exports.send_message = async (req, res, next) => {
     let mailOptions = {
         from: userData.email,
         to: "vipin.infograins@gmail.com", 
+        cc:"hr.infograins@gmail.com",
         // to: "bulbulbagwan918@gmail.com",
         subject: userData.subject, 
         html: "Name -"+ userData.Name+"<br>"+"Email - "+userData.email+"<br>"+ "Phone Number - "+userData.phone + "<br>"+ "Message - " +userData.message 
