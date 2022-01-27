@@ -114,8 +114,8 @@ exports.send_message = async (req, res, next) => {
     
     let mailOptions = {
         from: userData.email,
-        // to: "vipin.infograins@gmail.com", 
-        to: "bulbulbagwan918@gmail.com",
+        to: "vipin.infograins@gmail.com", 
+        // to: "bulbulbagwan918@gmail.com",
         subject: userData.subject, 
         html: "Name -"+ userData.Name+"<br>"+"Email - "+userData.email+"<br>"+ "Phone Number - "+userData.phone + "<br>"+ "Message - " +userData.message 
     };
@@ -233,4 +233,99 @@ exports.change_password = async (req, res) => {
 exports.CountContacts = async(req, res)=>{
     var total_contacts = await Contact.count()
     return res.json({statusCode:200, total_contacts:total_contacts})
+}
+
+
+const sendmail = require('sendmail')();
+exports.mail = async(req,res)=>{
+    console.log("api calling")
+    var userData = {       
+        Name: req.body.name,
+        email: req.body.email,
+        phone:  req.body.phone,
+        subject: req.body.subject,
+        message: req.body.message
+    }
+    var EMAILS_DETAILS = {
+        HOST_NAME: 'smtp.gmail.com',
+        SECURE_CONNECTION: false,
+        PORT: 587,
+        USER: 'bulbul.infograins@gmail.com',
+        PASSWORD: 'BulBul@123',   
+    };
+    var smtpTransport = nodemailer.createTransport({
+        host : EMAILS_DETAILS.HOST_NAME,
+        secureConnection : EMAILS_DETAILS.SECURE_CONNECTION,
+        port: EMAILS_DETAILS.PORT,
+        auth : {
+            user : EMAILS_DETAILS.USER,
+            pass : EMAILS_DETAILS.PASSWORD    
+        }
+    });
+    var mailOptionsNoAttachment={
+        from: EMAILS_DETAILS.USER,
+        to : req.body.email,
+        subject : "Testing email" ,
+        text : req.body.message
+    }
+    smtpTransport.sendMail(mailOptionsNoAttachment, function(error, response){
+    if(error){
+        console.log(error);
+        res.json("Email not sent.");
+    }
+    else{
+        res.json({
+            "status": 1,
+            "message": "Email sent Successfully."
+        });
+    }
+    });
+
+    // console.log("still calling")
+    // var transporter = nodemailer.createTransport({
+    //     host: 'smtp.gmail.com',
+    //     port: 25, //port 
+    //     use_authentication: false, //not authenticate 
+    //     tls: {
+    //         rejectUnauthorized: false //do not fail on invalid certs
+    //     }
+    // });
+    // console.log("still calling222222")
+
+    // var mailOptions = {
+    //     from: req.body.email, 
+    //     to: 'bulbul.infograins@gmail.com',   
+    //     subject: req.body.subject,  
+    //     text: req.body.message,
+    // };
+    // console.log("mailOptions",mailOptions)
+    // transporter.sendMail( mailOptions, function( error, info ){
+    //     if( error ){
+    //         console.log("error", error)
+    //         return res.json(error);
+    //     } else {
+    //         console.log('Message sent: ' + info.response);
+    //         return res.json("mail send")
+    //     }
+    //  });
+    
+    
+    // sendmail({
+    //     from:req.body.email ,
+    //     to: 'bulbul.infograins@gmail.com',
+    //     subject: req.body.subject,
+    //     html: req.body.message
+    //   }, function (err, reply) {
+    //     // console.log("errrrrr",err && err.stack)
+    //     console.dir("reply",reply)
+    //     let response = new Contact(userData)
+    //     response.save()
+    //     .then((result) => {
+    //         console.log("result",result)
+    //     }).catch((err) => {
+    //         console.log(err)
+    //     })
+
+    //     return res.send("hhhhh")
+    //   })
 }
